@@ -1,4 +1,4 @@
 # EAT-Server
 
-Software Engineering 
+Software Engineering
 Server Implementation
