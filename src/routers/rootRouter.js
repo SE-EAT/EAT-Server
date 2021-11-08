@@ -1,12 +1,7 @@
 import express from "express";
-import {
-  getJoin,
-  postJoin,
-  getLogin,
-  postLogin,
-  getFind,
-  getMain,
-} from "../controllers/userController";
+import { getLogin, postLogin } from "../controllers/loginController";
+import { getJoin, postJoin } from "../controllers/joinController";
+import { getMain } from "../controllers/matchingController";
 
 const rootRouter = express.Router();
 

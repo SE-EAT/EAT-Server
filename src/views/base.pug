@@ -4,5 +4,7 @@ html(lang="ko")
         title #{pageTitle} | E.A.T
         link(rel="stylesheet" href="https://unpkg.com/mvp.css")
     body
+        if messages.error
+            span=messages.error
         main
             block content

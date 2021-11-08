@@ -9,6 +9,21 @@ block content
         input(name="password_confirm", type="password", placeholder="Confirm Password", required)
         input(name="email", type="email", placeholder="Ajou Email", required)
         input(name="nickname", type="text", placeholder="Nickname", required)
+        fieldset
+            legend Choose your favorite food
+            div
+                input(name="taste", type="checkbox", id="korean", value="korean")
+                label(for="korean") Korean Food
+            div
+                input(name="taste", type="checkbox", id="japanese", value="japanese")
+                label(for="japanese") Japanese Food
+            div
+                input(name="taste", type="checkbox", id="chinese", value="chinese")
+                label(for="chinese") Chinese Food
+            div
+                input(name="taste", type="checkbox", id="western", value="western")
+                label(for="western") Western Food
+        br
         input(type="submit", value="Join")
 
     hr
