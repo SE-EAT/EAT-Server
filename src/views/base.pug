@@ -1,10 +1,13 @@
 doctype html
 html(lang="ko")
     head
-        title #{pageTitle} | E.A.T
+        title #{pageTitle} | #{siteName}
         link(rel="stylesheet" href="https://unpkg.com/mvp.css")
     body
         if messages.error
             span=messages.error
+        include partials/header.pug
         main
             block content
+    block scripts
+    

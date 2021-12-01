@@ -8,6 +8,7 @@ import userRouter from "./routers/userRouter";
 import matchingRouter from "./routers/matchingRouter";
 import recommendRouter from "./routers/recommendRouter";
 import feedbackRouter from "./routers/feedbackRouter";
+import { localMiddleware } from "./middlewares";
 
 const app = express();
 const logger = morgan("dev");
@@ -25,7 +26,9 @@ app.use(
   })
 );
 app.use(flash());
+app.use(localMiddleware);
 
+app.use("/public", express.static(__dirname + "/public"));
 app.use("/", rootRouter);
 app.use("/users", userRouter);
 app.use("/matching", matchingRouter);
