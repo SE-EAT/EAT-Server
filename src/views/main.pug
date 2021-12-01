@@ -1,0 +1,13 @@
+extends base
+include mixins/room
+
+block content
+    ul
+        li
+            a(href="/matching/auto") Auto Matching
+        li
+            a(href="/matching/rooms") Create Room
+    each room in rooms
+        +room(room)
+    else
+        span No Rooms found

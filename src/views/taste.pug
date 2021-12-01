@@ -1,0 +1,43 @@
+extends base
+
+block content
+    form(method="POST")
+        fieldset
+            legend Choose your favorite food up to 5th place!
+            if loggedInUser.taste[0] == 0
+                div
+                    input(name="taste", type="radio", id="korean", value="0")
+                    label(for="korean") 한식
+            if loggedInUser.taste[1] == 0
+                div
+                    input(name="taste", type="radio", id="snack", value="1")
+                    label(for="snack") 분식
+            if loggedInUser.taste[2] == 0
+                div
+                    input(name="taste", type="radio", id="japanese", value="2")
+                    label(for="japanese") 일식
+            if loggedInUser.taste[3] == 0
+                div
+                    input(name="taste", type="radio", id="chicken", value="3")
+                    label(for="chicken") 치킨
+            if loggedInUser.taste[4] == 0
+                div
+                    input(name="taste", type="radio", id="western", value="4")
+                    label(for="western") 양식
+            if loggedInUser.taste[5] == 0
+                div
+                    input(name="taste", type="radio", id="asian", value="5")
+                    label(for="asian") 아시안
+            if loggedInUser.taste[6] == 0
+                div
+                    input(name="taste", type="radio", id="chinese", value="6")
+                    label(for="chinese") 중식
+            if loggedInUser.taste[7] == 0
+                div
+                    input(name="taste", type="radio", id="meat", value="7")
+                    label(for="meat") 고깃집
+            if loggedInUser.taste[8] == 0
+                div
+                    input(name="taste", type="radio", id="drink", value="8")
+                    label(for="drink") 술집
+        input(type="submit", value="next")

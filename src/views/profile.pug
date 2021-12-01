@@ -1,0 +1,28 @@
+extends base
+
+block content
+    ul
+        li
+            h3 ID : #{loggedInUser.ID}
+        li
+            h3 Email : #{loggedInUser.email}
+        li
+            h3 Nickname : #{loggedInUser.nickname}
+        li
+            h3 Student ID : #{loggedInUser.studentID}
+        li
+            h3 Sex : #{loggedInUser.sex}
+        li
+            h3 Address : #{loggedInUser.address}
+        li
+            h3 Taste
+                ol
+                    each taste in tasteRank
+                        li=taste
+                    
+    hr
+    div
+        a(href="/users/edit") Edit Profile &rarr;
+    div
+        a(href="/users/taste/initial") Edit Taste &rarr;
+        

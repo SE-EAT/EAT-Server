@@ -1,0 +1,13 @@
+extends base
+
+block content
+    h1=loggedInUser.nickname
+    ul
+        li
+            a(href="/users") Profile
+        li
+            a(href="/matching") Matching
+        li
+            a(href="/feedback") Feedback
+        li
+            a(href="/recommend") Recommend

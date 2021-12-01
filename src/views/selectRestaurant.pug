@@ -1,0 +1,8 @@
+extends base
+block content
+    form(method="POST")
+        each restaurant in restaurant_list
+            input(name="restaurant", type="radio", id="korean", value=`${restaurant._id}`)
+            label(for="korean") #{restaurant.name}
+            br
+        input(type="submit", value="Create Room")

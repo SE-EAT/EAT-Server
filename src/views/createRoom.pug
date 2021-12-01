@@ -1,0 +1,29 @@
+extends base
+block content
+    form(method="POST")
+        label(for="category")
+        select(id="category", name="category")
+            option 카테고리
+            option(value="korea") 한식
+            option(value="china") 중식
+            option(value="japan") 일식
+            option(value="western") 양식
+            option(value="snack") 분식
+            option(value="chicken") 치킨
+            option(value="asian") 아시안
+            option(value="meat") 고깃집
+            option(value="drink") 술집
+        input(type="submit", value="Next")
+
+
+
+
+
+
+    //- div
+    //-     label(for="restaurant")
+    //-     select(id="restaurant", name="restaurant")
+    //-         option 식당
+    
+//- block scripts
+//-     script(src="/static/js/restaurantSelect.js")
