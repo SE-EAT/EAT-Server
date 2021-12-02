@@ -13,7 +13,7 @@ export const home = (req, res) => {
 };
 
 export const main = async (req, res) => {
-  const rooms = await roomModel.find({});
+  const rooms = await roomModel.find({}).populate("restaurant");
   return res.render("main", { pageTitle: "Main", rooms });
 };
 
@@ -86,91 +86,35 @@ export const postSelectRestaurant = async (req, res) => {
     users: _id,
     restaurant: id,
     date: Date.now(),
-    roomState: 1,
+    roomState: 0,
   });
   return res.redirect(`/matching/room/${newRoom.id}`);
 };
-export const getJoinRoom = (req, res) => {
-  console.log(req);
-  return res.render("room", { pageTitle: "Room" });
+export const getJoinRoom = async (req, res) => {
+  const { id } = req.params; // id = 접속한 방의 ID
+  const { _id } = req.session.user; // _id = 현재 로그인한 유저의 ID
+  const roomInfo = await roomModel
+    .findById(id)
+    .populate("users")
+    .populate("restaurant");
+  let updateRoomInfo;
+  if (roomInfo.users.length == 1 && roomInfo.users[0]._id.toString() !== _id) {
+    roomInfo.users.push(_id);
+    try {
+      await roomModel.updateOne(
+        { _id: id },
+        {
+          users: roomInfo.users,
+        }
+      );
+    } catch (error) {
+      return res.status(400).redirect("/matching");
+    }
+  }
+  updateRoomInfo = await roomModel
+    .findById(id)
+    .populate("users")
+    .populate("restaurant");
+  return res.render("room", { pageTitle: "Room", roomInfo, updateRoomInfo });
 };
 export const postJoinRoom = (req, res) => {};
-
-// export const getSelectRestaurant = async (req, res) => {
-//   const restaurant_korean = await restaurantModel.find({
-//     category: "한식",
-//   });
-//   const restaurant_chinese = await restaurantModel.find({
-//     category: "중식",
-//   });
-//   const restaurant_japanese = await restaurantModel.find({
-//     category: "일식",
-//   });
-//   const restaurant_western = await restaurantModel.find({
-//     category: "양식",
-//   });
-//   const restaurant_snack = await restaurantModel.find({
-//     category: "분식",
-//   });
-//   const restaurant_chicken = await restaurantModel.find({
-//     category: "치킨",
-//   });
-//   const restaurant_asian = await restaurantModel.find({
-//     category: "아시안",
-//   });
-//   const restaurant_meat = await restaurantModel.find({
-//     category: "고깃집",
-//   });
-//   const restaurant_drink = await restaurantModel.find({
-//     category: "술집",
-//   });
-
-//   switch (category) {
-//     case "korea":
-//       const restaurant_korean = await restaurantModel.find({
-//         category: "한식",
-//       });
-//       break;
-//     case "china":
-//       const restaurant_chinese = await restaurantModel.find({
-//         category: "중식",
-//       });
-//       break;
-//     case "japan":
-//       const restaurant_japanese = await restaurantModel.find({
-//         category: "일식",
-//       });
-//       break;
-//     case "western":
-//       const restaurant_western = await restaurantModel.find({
-//         category: "양식",
-//       });
-//       break;
-//     case "snack":
-//       const restaurant_snack = await restaurantModel.find({
-//         category: "분식",
-//       });
-//       break;
-//     case "chicken":
-//       const restaurant_chicken = await restaurantModel.find({
-//         category: "치킨",
-//       });
-//       break;
-//     case "asian":
-//       const restaurant_asian = await restaurantModel.find({
-//         category: "아시안",
-//       });
-//       break;
-//     case "meat":
-//       const restaurant_meat = await restaurantModel.find({
-//         category: "고깃집",
-//       });
-//       break;
-//     case "drink":
-//       const restaurant_drink = await restaurantModel.find({
-//         category: "술집",
-//       });
-//       break;
-//     default:
-//   }
-// };

@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "nodemon",
-    "assets": "webpack --config webpack.config.js"
+    "server": "nodemon"
   },
   "repository": {
     "type": "git",
@@ -29,6 +28,7 @@
     "mongoose": "^6.0.12",
     "morgan": "^1.10.0",
     "pug": "^3.0.2",
+    "socket.io": "^4.4.0",
     "ws": "^8.3.0"
   },
   "devDependencies": {

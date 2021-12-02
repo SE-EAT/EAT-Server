@@ -7,7 +7,9 @@ block content
             a(href="/matching/auto") Auto Matching
         li
             a(href="/matching/rooms") Create Room
-    each room in rooms
-        +room(room)
-    else
-        span No Rooms found
+    div
+        h2 Room List
+        each room in rooms
+            +room(room)
+        else
+            span No Rooms found

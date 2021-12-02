@@ -126,23 +126,36 @@ const handleRank = (index) => {
     default:
   }
 };
-export const profile = (req, res) => {
+const checkTaste = (taste) => {
   tasteRank = [];
-  const tastes = req.session.user.taste;
   let rank = 5;
-  for (let i = 0; i < 9; ) {
+  for (let i = 0; i < 9; i++) {
     if (rank == 0) {
       break;
     }
-    if (tastes[i] == rank) {
+    if (taste[i] == rank) {
       handleRank(i);
       rank -= 1;
       i = 0;
       continue;
     }
-    i++;
   }
-  return res.render("profile", { pageTitle: "Profile", tasteRank });
+  return tasteRank;
+};
+export const profile = (req, res) => {
+  const tastes = req.session.user.taste;
+  const personal_tasteRank = checkTaste(tastes);
+  return res.render("profile", { pageTitle: "Profile", personal_tasteRank });
+};
+export const openProfile = (req, res) => {
+  // const { id } = req.params;
+  // const user = await userModel.findById(id);
+  const tastes = req.session.user.taste;
+  const personal_tasteRank = checkTaste(tastes);
+  return res.render("openProfile", {
+    pageTitle: "Profile",
+    personal_tasteRank,
+  });
 };
 export const getEditProfile = (req, res) => {
   return res.render("editProfile", { pageTitle: "Edit Profile" });
@@ -154,6 +167,7 @@ export const getTaste = (req, res) => {
   return res.render("taste", { pageTitle: "Taste" });
 };
 export const postTaste = async (req, res) => {
+  const { _id } = req.session.user;
   req.session.user.taste.forEach((current, index) => {
     if (req.session.user.taste[index] != 0) {
       req.session.user.taste[index] += 1;
@@ -167,9 +181,12 @@ export const postTaste = async (req, res) => {
   if (tasteValue < 15) {
     return res.redirect("/users/taste");
   }
-  await userModel.updateOne({
-    taste: req.session.user.taste,
-  });
+  await userModel.updateOne(
+    { _id: _id },
+    {
+      taste: req.session.user.taste,
+    }
+  );
   return res.redirect("/users");
 };
 export const getInitialTaste = (req, res) => {
@@ -177,4 +194,8 @@ export const getInitialTaste = (req, res) => {
     req.session.user.taste[index] = 0;
   });
   return res.redirect("/users/taste");
+};
+export const logout = (req, res) => {
+  req.session.destroy();
+  return res.redirect("/");
 };

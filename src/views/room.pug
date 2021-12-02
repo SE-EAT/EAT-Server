@@ -1,4 +1,21 @@
 extends base
 block content
+    h1=`식당 : ${roomInfo.restaurant.name}`
+
+    div#users Users : 
+        a(href=`/users/${roomInfo.users[0]._id}`) #{roomInfo.users[0].nickname}
+    //- h3=`Host : ${updateRoomInfo.users[0].nickname}`
+    //- if updateRoomInfo.users[1]
+    //-     h3=`Guest : ${updateRoomInfo.users[1].nickname}`
+    br
+
+    div#chat_list
+
+    div
+        form
+            input(type="text", placeholder="message", required)
+            button Send
+
 block scripts
+    script(src="/socket.io/socket.io.js")
     script(src="/public/js/app.js")
