@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema({
   sex: { type: String, required: true },
   address: { type: String, required: true },
   taste: [{ type: Number, required: true }],
+  userState: { type: Number, default: 0 },
+  rating: { type: Number, default: 0 },
 });
 
 userSchema.pre("save", async function () {

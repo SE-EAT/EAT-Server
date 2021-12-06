@@ -1,17 +1,25 @@
 const socket = io();
 const form = document.querySelector("form");
 
-socket.emit("newUserJoin");
+socket.emit("newUserJoin", null, () => console.log("Client - New User Join"));
 
-const addUsers = (name, id) => {
+const addUsers = (name, id, address, restaurant) => {
   const users = document.getElementById("users");
   const host = users.querySelector("a");
   if (host.innerText !== name) {
     const username = document.createElement("a");
     username.classList.add("guest");
     username.innerText = name;
-    username.href = `/users/${id}`;
+    username.href = "#none";
+    username.addEventListener("click", () =>
+      window.open(`/users/${id}`, "_blank", "width=300, height=300")
+    );
     users.appendChild(username);
+
+    const iframe = document.getElementById("guestMap");
+    if (iframe) {
+      iframe.src = `https://map.kakao.com/?sName=${address}&eName=${restaurant}`;
+    }
   }
 };
 
@@ -48,7 +56,7 @@ socket.on("welcome", (data) => {
   }
 });
 socket.on("nickname", (data) => {
-  addUsers(data.nickname, data.id);
+  addUsers(data.nickname, data.id, data.address, data.restaurant);
 });
 socket.on("bye", (data) => {
   addMessages(`${data.nickname}님이 나갔습니다`);

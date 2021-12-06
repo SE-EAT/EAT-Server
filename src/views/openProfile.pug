@@ -1,8 +1,15 @@
-extends base
-block content
-    ul
-        li
-            h3 Taste
-                ol
-                    each taste in personal_tasteRank
-                        li=taste
+doctype html
+html(lang="ko")
+    head
+        title #{pageTitle} | #{siteName}
+        link(rel="stylesheet" href="https://unpkg.com/mvp.css")
+    body
+        if messages.error
+            span=messages.error
+        main
+            ul
+                li
+                    h3 Taste
+                        ol
+                            each taste in personal_tasteRank
+                                li=taste

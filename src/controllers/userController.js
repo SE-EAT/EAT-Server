@@ -6,6 +6,7 @@ export const getLogin = (req, res) => {
 };
 export const postLogin = async (req, res) => {
   const { ID, password } = req.body;
+  console.log(res);
   const user = await userModel.findOne({ ID });
   if (!user) {
     req.flash("error", "An account with this email does not exists");
@@ -20,8 +21,11 @@ export const postLogin = async (req, res) => {
       pageTitle: "Login",
     });
   }
+  user.userState = 1;
+  await user.save();
   req.session.loggedIn = true;
   req.session.user = user;
+  // console.log(req);
   return res.redirect("/home");
 };
 
@@ -39,6 +43,23 @@ export const postJoin = async (req, res) => {
     sex,
     address,
   } = req.body;
+
+  // const url = `https://dapi.kakao.com/v2/local/search/address.json?query=${address}`;
+  // const apiKey = "KakaoAK c696927ee4390c8e63125f95dbbb91d7";
+  // const result = req
+  //   .get(
+  //     urlparse(url).geturl(),
+  //     (headers = { Authorization: `KakaoAK ${apiKey}` })
+  //   )
+  //   .json();
+  // console.log(result);
+
+  // const geocoder = new kakao.maps.services.Geocoder();
+  // geocoder.addressSearch(address, (result, status) => {
+  //   if (status === kakao.maps.services.Status.OK) {
+  //     console.log(result);
+  //   }
+  // });
 
   const checkExistedID = await userModel.exists({ ID });
   if (checkExistedID) {
@@ -84,6 +105,7 @@ export const postJoin = async (req, res) => {
       sex,
       address,
       taste: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      userState: 0,
     });
   } catch (error) {
     return res.status(400).render("join", {
@@ -147,11 +169,12 @@ export const profile = (req, res) => {
   const personal_tasteRank = checkTaste(tastes);
   return res.render("profile", { pageTitle: "Profile", personal_tasteRank });
 };
-export const openProfile = (req, res) => {
-  // const { id } = req.params;
-  // const user = await userModel.findById(id);
-  const tastes = req.session.user.taste;
+export const openProfile = async (req, res) => {
+  const { id } = req.params;
+  const user = await userModel.findById(id);
+  const tastes = user.taste;
   const personal_tasteRank = checkTaste(tastes);
+
   return res.render("openProfile", {
     pageTitle: "Profile",
     personal_tasteRank,
@@ -195,7 +218,11 @@ export const getInitialTaste = (req, res) => {
   });
   return res.redirect("/users/taste");
 };
-export const logout = (req, res) => {
+export const logout = async (req, res) => {
+  const { _id } = req.session.user;
+  const user = await userModel.findById(_id);
+  user.userState = 0;
+  await user.save();
   req.session.destroy();
   return res.redirect("/");
 };

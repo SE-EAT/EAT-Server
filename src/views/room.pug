@@ -1,12 +1,19 @@
 extends base
 block content
-    h1=`식당 : ${roomInfo.restaurant.name}`
+    //- h1=`식당 : ${roomInfo.restaurant.name}`
+    //- a(href="#none", onclick=`window.open("https://map.kakao.com/?sName=${시작위치}&eName=${끝나는 위치}", '_blank', width=500, height=500)`)
 
+    div#kakaoMap
+        //- a(href="#none", onclick=`window.open("https://map.kakao.com/?sName=${roomInfo.users[0].address}&eName=${roomInfo.restaurant.name}", "_blank", width=500, height=500)`) #{roomInfo.restaurant.name}
+        if nickname == roomInfo.users[0].nickname
+            iframe(src=`https://map.kakao.com/?sName=${roomInfo.users[0].address}&eName=${roomInfo.restaurant.name}`, width=800, height=400)
+        else
+            iframe(src=`https://map.kakao.com/?sName=${roomInfo.users[1].address}&eName=${roomInfo.restaurant.name}`, width=800, height=400, name="iframe")#guestMap
+            
     div#users Users : 
-        a(href=`/users/${roomInfo.users[0]._id}`) #{roomInfo.users[0].nickname}
-    //- h3=`Host : ${updateRoomInfo.users[0].nickname}`
-    //- if updateRoomInfo.users[1]
-    //-     h3=`Guest : ${updateRoomInfo.users[1].nickname}`
+        a(href="#none", onclick=`window.open("/users/${roomInfo.users[0]._id}", '_blank', 'width=300, height=300')`) #{roomInfo.users[0].nickname}
+        //- a(href=`/users/${roomInfo.users[0]._id}`, target="_blank", width="500", height="500") #{roomInfo.users[0].nickname}
+
     br
 
     div#chat_list
@@ -17,5 +24,8 @@ block content
             button Send
 
 block scripts
+
+    //- script(src="/public/js/map.js")
     script(src="/socket.io/socket.io.js")
     script(src="/public/js/app.js")
+    

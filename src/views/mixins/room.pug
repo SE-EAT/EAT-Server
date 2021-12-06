@@ -1,3 +1,6 @@
 mixin room(room)
     a(href=`/matching/room/${room.id}`) #{room.restaurant.name}
+        div
+            br
+            span #{room.users[0].nickname}
     br

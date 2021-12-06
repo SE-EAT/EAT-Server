@@ -1,7 +1,9 @@
 import roomModel from "../models/roomModel";
+import userModel from "../models/userModel";
 import restaurantModel from "../models/restaurantModel";
 
 let restaurant_list;
+const THRESHOLD = 0.3;
 
 export const home = (req, res) => {
   let tasteValue = 0;
@@ -13,9 +15,44 @@ export const home = (req, res) => {
 };
 
 export const main = async (req, res) => {
-  const rooms = await roomModel.find({}).populate("restaurant");
+  const rooms = await roomModel
+    .find({})
+    .populate("restaurant")
+    .populate("users");
   return res.render("main", { pageTitle: "Main", rooms });
 };
+
+const cosineSimilarity = (myTaste, otherTaste) => {
+  let sum = 0;
+  for (let i = 0; i < 9; i++) {
+    sum += myTaste[i] * otherTaste[i];
+  }
+  const score = sum / 55;
+  return score;
+};
+
+export const getAutoMatching = async (req, res) => {
+  const { taste } = req.session.user;
+  const rooms = await roomModel
+    .find({ roomState: 0 })
+    .populate("restaurant")
+    .populate("users");
+  let autoMatching_list = [];
+  for (let i = 0; i < rooms.length; i++) {
+    let score = cosineSimilarity(taste, rooms[i].users[0].taste);
+    console.log("Score : ", score);
+    if (score >= THRESHOLD) {
+      autoMatching_list.push(rooms[i]);
+    }
+  }
+
+  return res.render("autoMatching", {
+    pageTitle: "Auto Matching",
+    autoMatching_list,
+  });
+};
+
+export const postAutoMatching = (req, res) => {};
 
 export const getCreateRoom = (req, res) => {
   return res.render("createRoom", { pageTitle: "Create Room" });
@@ -82,22 +119,37 @@ export const getSelectRestaurant = (req, res) => {
 export const postSelectRestaurant = async (req, res) => {
   const { restaurant: id } = req.body;
   const { _id } = req.session.user;
-  const newRoom = await roomModel.create({
-    users: _id,
-    restaurant: id,
-    date: Date.now(),
-    roomState: 0,
-  });
+  try {
+    await userModel.findByIdAndUpdate(_id, {
+      userState: 2,
+    });
+  } catch (error) {
+    console.log("Error in postSelectRestaurant - find user");
+    console.log(error);
+  }
+  let newRoom;
+  try {
+    newRoom = await roomModel.create({
+      users: _id,
+      restaurant: id,
+      date: Date.now(),
+      roomState: 0,
+    });
+  } catch (error) {
+    console.log("Error in postSelectRestaurant - create room");
+    console.log(error);
+  }
   return res.redirect(`/matching/room/${newRoom.id}`);
 };
-export const getJoinRoom = async (req, res) => {
+
+export const joinRoom = async (req, res) => {
   const { id } = req.params; // id = 접속한 방의 ID
-  const { _id } = req.session.user; // _id = 현재 로그인한 유저의 ID
+  const { _id, nickname } = req.session.user; // _id = 현재 로그인한 유저의 ID
   const roomInfo = await roomModel
     .findById(id)
     .populate("users")
     .populate("restaurant");
-  let updateRoomInfo;
+  const userInfo = await userModel.findById(_id);
   if (roomInfo.users.length == 1 && roomInfo.users[0]._id.toString() !== _id) {
     roomInfo.users.push(_id);
     try {
@@ -105,16 +157,15 @@ export const getJoinRoom = async (req, res) => {
         { _id: id },
         {
           users: roomInfo.users,
+          roomState: 1,
         }
       );
     } catch (error) {
       return res.status(400).redirect("/matching");
     }
+    userInfo.userState = 2;
+    await userInfo.save();
   }
-  updateRoomInfo = await roomModel
-    .findById(id)
-    .populate("users")
-    .populate("restaurant");
-  return res.render("room", { pageTitle: "Room", roomInfo, updateRoomInfo });
+  return res.render("room", { pageTitle: "Room", roomInfo, nickname });
 };
 export const postJoinRoom = (req, res) => {};

@@ -1,0 +1,9 @@
+extends base
+include mixins/room
+block content
+    div
+        h2 Room List
+        each room in autoMatching_list
+            +room(room)
+        else
+            span No Rooms found

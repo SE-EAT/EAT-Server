@@ -2,7 +2,6 @@ import express from "express";
 import {
   profile,
   openProfile,
-  logout,
   getEditProfile,
   postEditProfile,
   getTaste,
@@ -14,7 +13,6 @@ const userRouter = express.Router();
 
 userRouter.route("/").get(profile);
 userRouter.route("/:id([0-9a-f]{24})").get(openProfile);
-userRouter.route("/logout").get(logout);
 userRouter.route("/edit").get(getEditProfile).post(postEditProfile);
 userRouter.route("/taste").get(getTaste).post(postTaste);
 userRouter.route("/taste/initial").get(getInitialTaste);
