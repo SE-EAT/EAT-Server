@@ -7,7 +7,7 @@ const roomSchema = new mongoose.Schema({
     required: true,
     ref: "Restaurant",
   },
-  date: { type: Date, required: true, default: Date.now },
+  date: { type: String, required: true },
   roomState: { type: Number, required: true, default: 0 },
 });
 

@@ -1,6 +1,21 @@
 mixin room(room)
-    a(href=`/matching/room/${room.id}`) #{room.restaurant.name}
+    if room.roomState != 0
+        span #{room.restaurant.name}
         div
             br
             span #{room.users[0].nickname}
-    br
+            if room.users[1]
+                span #{room.users[1].nickname} 
+            span  #{room.date}
+
+        br
+    else
+        a(href=`/matching/room/${room.id}`) #{room.restaurant.name}
+            div
+                br
+                span #{room.users[0].nickname}
+                if room.users[1]
+                    span #{room.users[1].nickname} 
+                span  #{room.date}
+
+        br

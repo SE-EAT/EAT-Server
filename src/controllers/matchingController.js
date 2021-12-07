@@ -22,6 +22,15 @@ export const main = async (req, res) => {
   return res.render("main", { pageTitle: "Main", rooms });
 };
 
+const euclideanDistance = (myTaste, otherTaste) => {
+  let sum = 0;
+  for (let i = 0; i < 9; i++) {
+    sum += (myTaste[i] - otherTaste[i]) * (myTaste[i] - otherTaste[i]);
+  }
+  sum = Math.sqrt(sum);
+  return sum;
+};
+
 const cosineSimilarity = (myTaste, otherTaste) => {
   let sum = 0;
   for (let i = 0; i < 9; i++) {
@@ -31,35 +40,68 @@ const cosineSimilarity = (myTaste, otherTaste) => {
   return score;
 };
 
-export const getAutoMatching = async (req, res) => {
-  const { taste } = req.session.user;
+const rateSimilarity = (myRate, otherRate) => {
+  const rate = Math.sqrt((myRate - otherRate) * (myRate - otherRate));
+  return rate;
+};
+const calcalateScore = (me, other) => {
+  const score =
+    euclideanDistance(me.taste, other.taste) +
+    rateSimilarity(me.rating, other.rating);
+  return score;
+};
+
+export const autoMatching = async (req, res) => {
+  const { user } = req.session;
   const rooms = await roomModel
     .find({ roomState: 0 })
     .populate("restaurant")
     .populate("users");
   let autoMatching_list = [];
   for (let i = 0; i < rooms.length; i++) {
-    let score = cosineSimilarity(taste, rooms[i].users[0].taste);
-    console.log("Score : ", score);
-    if (score >= THRESHOLD) {
+    let len = autoMatching_list.length;
+    let score = calcalateScore(user, rooms[i].users[0]);
+
+    for (let j = 0; j < autoMatching_list.length; j++) {
+      if (calcalateScore(user, autoMatching_list[j].users[0]) > score) {
+        autoMatching_list.splice(j, 0, rooms[i]);
+        break;
+      }
+    }
+    if (autoMatching_list.length == len) {
       autoMatching_list.push(rooms[i]);
+    }
+    console.log(`autoMatching_list ${i} : `, autoMatching_list);
+  }
+
+  let result_room_list = [];
+  for (let k = 0; k < 3; k++) {
+    if (!autoMatching_list[k]) {
+      break;
+    }
+    if (
+      cosineSimilarity(user.taste, autoMatching_list[k].users[0].taste) >
+      THRESHOLD
+    ) {
+      result_room_list.push(autoMatching_list[k]);
     }
   }
 
   return res.render("autoMatching", {
     pageTitle: "Auto Matching",
-    autoMatching_list,
+    result_room_list,
   });
 };
-
-export const postAutoMatching = (req, res) => {};
 
 export const getCreateRoom = (req, res) => {
   return res.render("createRoom", { pageTitle: "Create Room" });
 };
+let hours;
+let minutes;
 export const postCreateRoom = async (req, res) => {
-  const { category } = req.body;
-
+  const { category, hour, minute } = req.body;
+  hours = hour;
+  minutes = minute;
   switch (category) {
     case "korea":
       restaurant_list = await restaurantModel.find({
@@ -132,7 +174,7 @@ export const postSelectRestaurant = async (req, res) => {
     newRoom = await roomModel.create({
       users: _id,
       restaurant: id,
-      date: Date.now(),
+      date: `${hours} : ${minutes}`,
       roomState: 0,
     });
   } catch (error) {
@@ -149,6 +191,11 @@ export const joinRoom = async (req, res) => {
     .findById(id)
     .populate("users")
     .populate("restaurant");
+  if (roomInfo.roomState != 0) {
+    req.flash("error", "This room is already full");
+    return res.status(400).redirect("/matching");
+  }
+
   const userInfo = await userModel.findById(_id);
   if (roomInfo.users.length == 1 && roomInfo.users[0]._id.toString() !== _id) {
     roomInfo.users.push(_id);
@@ -168,4 +215,4 @@ export const joinRoom = async (req, res) => {
   }
   return res.render("room", { pageTitle: "Room", roomInfo, nickname });
 };
-export const postJoinRoom = (req, res) => {};
+export const ready_start = (req, res) => {};

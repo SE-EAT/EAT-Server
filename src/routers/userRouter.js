@@ -13,8 +13,8 @@ const userRouter = express.Router();
 
 userRouter.route("/").get(profile);
 userRouter.route("/:id([0-9a-f]{24})").get(openProfile);
-userRouter.route("/edit").get(getEditProfile).post(postEditProfile);
 userRouter.route("/taste").get(getTaste).post(postTaste);
+userRouter.route("/edit").get(getEditProfile).post(postEditProfile);
 userRouter.route("/taste/initial").get(getInitialTaste);
 
 export default userRouter;

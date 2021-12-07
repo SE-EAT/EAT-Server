@@ -3,7 +3,9 @@ include mixins/room
 block content
     div
         h2 Room List
-        each room in autoMatching_list
-            +room(room)
-        else
-            span No Rooms found
+            br
+            each room in result_room_list
+                +room(room)
+                br
+            else
+                span No Rooms found

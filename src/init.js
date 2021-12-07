@@ -7,10 +7,8 @@ import app from "./server";
 import roomModel from "./models/roomModel";
 import userModel from "./models/userModel";
 
-const PORT = 5000;
-
 const handleListening = () =>
-  console.log(`✅ Server listening on http://localhost:${PORT}`);
+  console.log(`✅ Server listening on http://localhost:${process.env.PORT}`);
 
 const httpServer = http.createServer(app);
 const wsServer = SocketIO(httpServer);
@@ -29,9 +27,10 @@ wsServer.on("connection", async (socket) => {
       done();
       socket.join(roomID);
       socket.name = room.users[room.users.length - 1].nickname;
+      console.log("In Socket : ", socket.name);
       socket.to(roomID).emit("welcome", {
         name: "SERVER",
-        message: `${socket.name}님이 입장하셨습니다.`,
+        message: `Info - ${socket.name}님이 입장하셨습니다.`,
       });
       wsServer.sockets.to(roomID).emit("nickname", {
         name: "SERVER",
@@ -51,11 +50,19 @@ wsServer.on("connection", async (socket) => {
       );
       try {
         room = await roomModel.findById(roomID).populate("users");
+        let leftUser;
+        console.log("Out Socket : ", socket.name);
         if (room.users[0].nickname === socket.name) {
+          leftUser = await userModel.findById(room.users[0].id);
+          leftUser.userState = 1;
           room.users.shift();
         } else {
+          leftUser = await userModel.findById(room.users[1].id);
+          leftUser.userState = 1;
           room.users.pop();
         }
+        await leftUser.save();
+        room.roomState = 0;
         if (room.users.length === 0) {
           try {
             await roomModel.deleteOne({ _id: roomID });
@@ -80,4 +87,4 @@ wsServer.on("connection", async (socket) => {
   }
 });
 
-httpServer.listen(PORT, handleListening);
+httpServer.listen(process.env.PORT, handleListening);
